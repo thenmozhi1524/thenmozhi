@@ -1,0 +1,89 @@
+#include <stdio.h>
+  #include <string.h>
+  #include <stdlib.h>
+  #include <time.h>
+
+  struct transaction {
+        char time[256];
+        int credit, debit, balance;
+  };
+
+  /* time calculation to store in database */
+  void calcTime(char *str) {
+        time_t ts;
+        ts = time(NULL);
+        strcpy(str, ctime(&ts));
+        str[strlen(str) - 1] = '\0';
+        return;
+  }
+
+  int main() {
+        struct transaction obj[100];
+        int count = 0, amount, total = 0, i, ch;
+        char account[100];
+
+        /* get the account number */
+        printf("Enter your Account Number:");
+        fgets(account, 100, stdin);
+        account[strlen(account) - 1] = '\0';
+
+        /* account number verification */
+        if (strcmp(account, "110011") !=0) {
+                printf("%s does not exists!!\n", account);
+                return 0;
+        }
+
+        memset(obj, 0, sizeof(obj));
+        while (1) {
+                printf("1. Deposit\n2. Withdraw\n3. Account Summary\n4. Exit\n");
+                printf("Enter your choice:");
+                scanf("%d", &ch);
+                switch (ch) {
+                        case 1:
+                                /* Deposit operation */
+                                printf("Enter the amount you want to deposit:");
+                                scanf("%d", &amount);
+                                obj[count].credit = amount;
+                                total = total + amount;
+                                obj[count].balance = total;
+                                calcTime(obj[count].time);
+                                count++;
+                                break;
+
+                        case 2:
+                                /* Withdraw operation  */
+                                printf("Enter the amount you want to withdraw:");
+                                scanf("%d", &amount);
+                                if (total - amount < 0) {
+                                        printf("Underbalance!! Can't withdraw\n");
+                                        break;
+                                }
+                                obj[count].debit = amount;
+                                total = total - amount;
+                                obj[count].balance = total;
+                                calcTime(obj[count].time);
+                                count++;
+
+                                break;
+
+                        case 3:
+                                /* prints account summary */
+                                printf("Transaction Time            Deposit    "
+                                                                "WithDraw   Balance\n");
+                                for (i = 0; i < count; i++) {
+                                        printf("%s %10d%10d%10d\n", obj[i].time,
+                                                obj[i].credit, obj[i].debit, obj[i].balance);
+                                }
+                                break;
+
+                        case 4:
+                                exit(0);
+
+                        default:
+                                printf("You have entered wrong option!!\n");
+                                break;
+                }
+
+        }
+        return 0;
+  }
